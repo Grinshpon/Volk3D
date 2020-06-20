@@ -1,6 +1,5 @@
 love.window.setTitle "Raycaster";
 love.graphics.setDefaultFilter("nearest","nearest")
---love.graphics.setNewFont("Fonts/uni05_53.ttf",25)
 love.graphics.setNewFont(40)
 
 love.window.setFullscreen(false)
@@ -68,7 +67,7 @@ function raycaster()
     local theta = simplifyAngle((i-1) * rayAngle + (player.dir - fov/2))
     local dist,h = shootRay(theta)
     dist = dist*math.cos(player.dir-theta)
-    local y = height/dist --100 - dist*10 -- 100 if dist = 0, get smaller as dist > 0
+    local y = height/dist
     if y > 0 then
       if h == 0 then
         love.graphics.setColor(1-dist/10,0,0)
@@ -93,9 +92,7 @@ function drawMap()
     local theta = simplifyAngle((i-1) * rayAngle + (player.dir - fov/2))
     local x, y = player.pos:coords()
     love.graphics.setColor(0,1,0)
-    --drawVec((x-1)*100, (y-1)*100, theta, 40)
     local d = shootRay(theta)
-    --love.graphics.print("dist:"..tostring(d),0,600)
     if d == -1 then d = 0.5; love.graphics.setColor(1,1,0) end
     drawVec((x-1)*100, (y-1)*100, theta, d*100)
   end
@@ -114,6 +111,7 @@ function simplifyAngle(theta)
   return theta
 end
 
+--[[
 function isQuadrant(theta, q)
   theta = simplifyAngle(theta)
   if q == 1 then
@@ -126,7 +124,8 @@ function isQuadrant(theta, q)
     return theta > (math.pi*3/2) and theta < 2*math.pi
   end
 end
-
+--]]
+--
 function dist(x1,y1,x2,y2)
   return math.sqrt(math.pow(math.abs(x2-x1),2)+math.pow(math.abs(y2-y1),2))
 end
@@ -138,8 +137,6 @@ function shootRay(theta)
   local distV, distH = nil,nil
   local x,y = player.pos:coords()
   local dirX, dirY = math.cos(theta), math.sin(theta)
-  --love.graphics.print("dirX:"..tostring(dirX),0,50)
-  --love.graphics.print("dirY:"..tostring(dirY),0,100)
   local dx, dy = 0,0
   if dirX > 0 then
     dx = math.ceil(x)-x
@@ -152,11 +149,6 @@ function shootRay(theta)
     dy = math.floor(y)-y
   end
 
-  --local nx,ny = -dx*tan,-dy/tan
-  --local deltaX,deltaY = -tan,1/tan
-
-  --local curX,curY = x+dx,y+dy --make sure these are integers (whole numbers)
-
   --distH, checking for horizontally aligned walls
   if dirY ~= 0 then
     local nx, ny = dy/tan,dy
@@ -168,14 +160,10 @@ function shootRay(theta)
       offset = 1
     end
     local curX, curY = x+nx, y+ny
-    --love.graphics.print(tostring(y).." "..tostring(ny).." "..tostring(y+ny),0,650)
     for _=1,dof do
       local intX, intY = math.floor(curX),curY-offset
-      --print(intX,intY)
       if intX > 0 and intX <= mapWidth and intY > 0 and intY <= mapHeight and map[intY][intX] > 0 then
         distH = dist(x,y,curX,curY)
-        --love.graphics.setColor(1,0,0)
-        --love.graphics.print(tostring(curX)..","..tostring(curY).."\t"..tostring(intX)..","..tostring(intY).."\t"..tostring(map[intY][intX]),0,700)
         break
       end
       curX = curX + stepX
@@ -198,7 +186,6 @@ function shootRay(theta)
       local intX, intY = curX-offset,math.floor(curY)
       if intX > 0 and intX <= mapWidth and intY > 0 and intY <= mapHeight and map[intY][intX] > 0 then
         distV = dist(x,y,curX,curY)
-        --love.graphics.print(tostring(intX).." "..tostring(intY).." "..tostring(map[intY][intX]),0,150)
         break
       end
       curX = curX + stepX
@@ -223,7 +210,7 @@ function drawVec(x, y, theta, r)
 end
 
 function love.load()
-  print(mapWidth,mapHeight)
+  print("Map: "..tostring(mapWidth).."x"..tostring(mapHeight))
   love.graphics.setBackgroundColor(0.7,0.7,0.7)
   love.graphics.setLineWidth(wratio())
 end
@@ -248,5 +235,4 @@ function love.draw()
   love.graphics.rectangle("fill",0,0,love.graphics.getWidth(),love.graphics.getHeight()/2)
   raycaster()
   if showMap then drawMap() end
-  --love.graphics.print("Dir: "..tostring(simplifyAngle(player.dir)/math.pi).."pi",0,0)
 end
