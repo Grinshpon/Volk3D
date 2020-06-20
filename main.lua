@@ -24,8 +24,6 @@ function hratio()
   return love.graphics.getHeight()/height
 end
 
-Linear = require "linear"
-
 map = {
   {1,1,1,1,1,1,1,1,1},
   {1,0,0,0,0,0,0,0,1},
@@ -41,22 +39,20 @@ mapWidth = #map[1]
 mapHeight = #map
 
 player = {
-  pos = Linear.vec{2.5,2.5},
+  pos = {x=2.5,y=2.5},
   dir = 0,
   rotate = function(self, theta)
     self.dir = self.dir + theta
   end,
   translate = function(self, dx,dy)
-    local x,y = self.pos:coords()
-    self.pos.set(1, x+dx)
-    self.pos.set(2, y+dy)
+    self.pos.x = self.pos.x+dx
+    self.pos.y = self.pos.y+dy
   end,
   move = function(self, mode, n)
-    local x,y = self.pos:coords()
     local theta = self.dir
     if mode == 1 then theta = theta + math.pi/2 end
-    self.pos:set(1, x+n*math.cos(theta))
-    self.pos:set(2, y+n*math.sin(theta))
+    self.pos.x = self.pos.x+n*math.cos(theta)
+    self.pos.y = self.pos.y+n*math.sin(theta)
   end,
 }
 
@@ -90,14 +86,14 @@ function drawMap()
   end
   for i=1, 320 do
     local theta = simplifyAngle((i-1) * rayAngle + (player.dir - fov/2))
-    local x, y = player.pos:coords()
+    local x, y = player.pos.x, player.pos.y
     love.graphics.setColor(0,1,0)
     local d = shootRay(theta)
     if d == -1 then d = 0.5; love.graphics.setColor(1,1,0) end
     drawVec((x-1)*100, (y-1)*100, theta, d*100)
   end
   love.graphics.setColor(1,0,0)
-  love.graphics.rectangle("fill", (player.pos:get(1)-1)*100-10, (player.pos:get(2)-1)*100-10, 20, 20)
+  love.graphics.rectangle("fill", (player.pos.x-1)*100-10, (player.pos.y-1)*100-10, 20, 20)
 end
 
 function simplifyAngle(theta)
@@ -135,7 +131,7 @@ function shootRay(theta)
   local tan = math.tan(theta)
 
   local distV, distH = nil,nil
-  local x,y = player.pos:coords()
+  local x,y = player.pos.x,player.pos.y
   local dirX, dirY = math.cos(theta), math.sin(theta)
   local dx, dy = 0,0
   if dirX > 0 then
