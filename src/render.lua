@@ -159,7 +159,7 @@ end
 
 function renderSlice(i,dist,id,slice) --slice todo
   if slice > 0 and slice <= 64 then
-    love.graphics.draw(wallTextures[id],wallSlice[slice], (i-1)*wratio()+wratio()/2,(100-height/dist)*hratio(), 0,1,6.25/dist*hratio())
+    love.graphics.draw(wallTextures[id],wallSlice[slice], (i-1)*wratio()+wratio()/2,(100-height/dist)*hratio(), 0,wratio(),6.25/dist*hratio())
   end
 end
 

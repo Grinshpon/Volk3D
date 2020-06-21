@@ -39,7 +39,7 @@ player = {
 
 wallSlice = {}
 for i=1,64 do
-  wallSlice[i] = love.graphics.newQuad(i-1,0,1*wratio(),64,64,64)
+  wallSlice[i] = love.graphics.newQuad(i-1,0,1,64,64,64)
 end
 
 wallTextures = {
