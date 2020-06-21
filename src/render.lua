@@ -170,13 +170,14 @@ function raycaster()
     dist = dist*math.cos(player.dir-theta)
     local y = height/dist
     if y > 0 then
+      local c = 1-dist/20
       if wall == 0 then
-        love.graphics.setColor(1-dist/10,0,0)
+        love.graphics.setColor(c,0,0)
       elseif wall == 1 then
-        love.graphics.setColor(0,0,1-dist/10)
+        love.graphics.setColor(0,0,c)
       end
       if textureMode then
-        love.graphics.setColor(1,1,1,1)
+        love.graphics.setColor(c,c,c,1)
         renderSlice(i,dist,id,slice)
       else
         renderLine(i,y)
