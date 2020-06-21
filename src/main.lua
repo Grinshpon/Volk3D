@@ -3,9 +3,10 @@ require "level"
 require "render"
 
 showMap = true
+textureMode = false
 
 function love.load()
-  print("Map: "..tostring(mapWidth).."x"..tostring(mapHeight))
+  --print("Map: "..tostring(mapWidth).."x"..tostring(mapHeight))
   love.graphics.setBackgroundColor(0.7,0.7,0.7)
   love.graphics.setLineWidth(wratio())
 end
@@ -21,9 +22,13 @@ function love.update(dt)
 end
 
 function love.keypressed(key)
-  if key == "m" then showMap = not showMap end
+  if key == "m" then showMap = not showMap
+  elseif key == "t" then textureMode = not textureMode
+  end
 end
 
 function love.draw()
   renderMap()
+  love.graphics.setColor(0.1,0.8,0.1)
+  love.graphics.print("FPS: "..tostring(love.timer.getFPS( )), 10, 10)
 end

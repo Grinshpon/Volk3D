@@ -1,3 +1,6 @@
 *.swp
 level1.lua
 *.txt
+assets/*
+*.xcf
+*.png

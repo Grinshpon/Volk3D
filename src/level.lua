@@ -1,8 +1,8 @@
 map = {
   {1,1,1,1,1,1,1,1,1},
   {1,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,1,1,1},
-  {1,0,1,0,0,0,0,0,1},
+  {1,0,0,0,0,0,2,2,1},
+  {1,0,2,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,0,0,1},
@@ -36,3 +36,14 @@ player = {
     end
   end,
 }
+
+wallSlice = {}
+for i=1,64 do
+  wallSlice[i] = love.graphics.newQuad(i-1,0,1*wratio(),64,64,64)
+end
+
+wallTextures = {
+  love.graphics.newImage("assets/brick1.png"),
+  love.graphics.newImage("assets/brick2.png"),
+}
+

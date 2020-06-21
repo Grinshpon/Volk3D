@@ -12,6 +12,8 @@ This is a raycasting demo for Love2D, which hopefully I'll eventually turn into 
 
 - m: toggle map
 
+- t: toggle texture mapping mode (WIP)
+
 - q/escape: quit
 
 ## Running
