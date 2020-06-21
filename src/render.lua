@@ -172,6 +172,7 @@ function raycaster()
     if y > 0 then
       local c = 1-dist/20
       if wall == 0 then
+        c = c-0.1
         love.graphics.setColor(c,0,0)
       elseif wall == 1 then
         love.graphics.setColor(0,0,c)

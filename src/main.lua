@@ -2,8 +2,8 @@ require "setup"
 require "level"
 require "render"
 
-showMap = true
-textureMode = false
+showMap = false
+textureMode = true
 
 function love.load()
   --print("Map: "..tostring(mapWidth).."x"..tostring(mapHeight))
