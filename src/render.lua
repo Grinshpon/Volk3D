@@ -2,6 +2,11 @@ fov = math.pi/3
 rayAngle = (fov)/320
 dof = 20 -- depth of field (how far away a wall gets before not being rendered)
 
+zBuffer = {}
+for i=1,320 do
+  zBuffer[i] = -1
+end
+
 function drawMap()
   love.graphics.setColor(0,0,0)
   love.graphics.rectangle("fill", 0, 0, 900, 900)
@@ -13,6 +18,7 @@ function drawMap()
   end
   for i=1, 320 do
     local theta = simplifyAngle((i-1) * rayAngle + (player.dir - fov/2))
+    --if i == 1 or i == 320 then print(i,simplifyAngle(player.dir-theta)) end
     local x, y = player.pos.x, player.pos.y
     love.graphics.setColor(0,1,0)
     local d = shootRay(theta)
@@ -21,6 +27,7 @@ function drawMap()
   end
   love.graphics.setColor(1,0,0)
   love.graphics.rectangle("fill", (player.pos.x-1)*100-10, (player.pos.y-1)*100-10, 20, 20)
+  love.graphics.rectangle("fill", (entities[1].x-1)*100-10, (entities[1].y-1)*100-10, 20, 20)
 end
 
 function simplifyAngle(theta)
@@ -48,9 +55,37 @@ function isQuadrant(theta, q)
   end
 end
 --]]
---
+
+function quadrant(x,y)
+  if x > 0 then
+    if y > 0 then return 1 else return 4 end
+  elseif x < 0 then
+    if y > 0 then return 2 else return 3 end
+  end
+end
+
+function ucAngle(x,y)
+  if x == 0 then
+    if y > 0 then return math.pi/2
+    elseif y < 0 then return math.pi*3/2
+    else return 0 end
+  elseif y == 0 then
+    if x >= 0 then return 0 else return math.pi end
+  end
+  local q = quadrant(x,y)
+  if q == 1 then return math.atan(y/x)
+  elseif q == 2 then return math.atan(y/x)+math.pi
+  elseif q == 3 then return math.atan(y/x)+math.pi
+  elseif q == 4 then return math.atan(y/x)+math.pi*2
+  end
+end
+
 function dist(x1,y1,x2,y2)
   return math.sqrt(math.pow(math.abs(x2-x1),2)+math.pow(math.abs(y2-y1),2))
+end
+
+function sqDist(x1,y1,x2,y2)
+  return math.pow(math.abs(x2-x1),2)+math.pow(math.abs(y2-y1),2)
 end
 
 function shootRay(theta)
@@ -146,10 +181,11 @@ function drawVec(x, y, theta, r)
   love.graphics.line(x,y,x+xp,y+yp)
 end
 
-function renderMap()
+function render()
   love.graphics.setColor(0.4,0.4,0.4)
   love.graphics.rectangle("fill",0,0,love.graphics.getWidth(),love.graphics.getHeight()/2)
   raycaster()
+  renderSprites()
   if showMap then drawMap() end
 end
 
@@ -159,7 +195,7 @@ end
 
 function renderSlice(i,dist,id,slice) --slice todo
   if slice > 0 and slice <= 64 then
-    love.graphics.draw(wallTextures[id],wallSlice[slice], (i-1)*wratio()+wratio()/2,(100-height/dist)*hratio(), 0,wratio(),6.25/dist*hratio())
+    love.graphics.draw(wallTextures[id],texSlice[slice], (i-1)*wratio()+wratio()/2,(100-height/dist)*hratio(), 0,wratio(),6.25/dist*hratio())
   end
 end
 
@@ -168,8 +204,9 @@ function raycaster()
     local theta = simplifyAngle((i-1) * rayAngle + (player.dir - fov/2))
     local dist,wall,id,slice = shootRay(theta)
     dist = dist*math.cos(player.dir-theta)
-    local y = height/dist
-    if y > 0 then
+    zBuffer[i] = dist
+    local sHeight = height/dist
+    if sHeight > 0 then
       local c = 1-dist/20
       if wall == 0 then
         c = c-0.1
@@ -181,10 +218,31 @@ function raycaster()
         love.graphics.setColor(c,c,c,1)
         renderSlice(i,dist,id,slice)
       else
-        renderLine(i,y)
+        renderLine(i,sHeight)
       end
     end
   end
 end
 
+function fartherEntity(e1,e2)
+  return sqDist(player.pos.x,player.pos.y,e1.x,e1.y) > sqDist(player.pos.x,player.pos.y,e2.x,e2.y)
+end
 
+function renderSprites()
+  -- sort entities farthest to closest, then draw according to zbuffer and painter's algo
+  table.sort(entities,fartherEntity)
+  for i,s in ipairs(entities) do
+    local vx,vy = s.x-player.pos.x, s.y-player.pos.y
+    local vt = ucAngle(vx,vy)
+    --local vt = math.atan(vy/vx)
+    local theta = simplifyAngle(player.dir-vt)
+
+    love.graphics.setColor(0.1,0.8,0.1)
+    love.graphics.print(theta,1000,10)
+    love.graphics.print(vt,1000,60)
+    love.graphics.print(simplifyAngle(player.dir),1000,110)
+  end
+  for i,d in ipairs(zBuffer) do
+
+  end
+end

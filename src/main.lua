@@ -28,7 +28,7 @@ function love.keypressed(key)
 end
 
 function love.draw()
-  renderMap()
+  render()
   love.graphics.setColor(0.1,0.8,0.1)
   love.graphics.print("FPS: "..tostring(love.timer.getFPS( )), 10, 10)
 end

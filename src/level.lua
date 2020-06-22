@@ -12,6 +12,10 @@ map = {
 mapWidth = #map[1]
 mapHeight = #map
 
+entities = {
+  {id=1,x=3,y=3}, -- sprite index, x,y
+}
+
 player = {
   pos = {x=2.5,y=2.5},
   dir = 0,
@@ -37,9 +41,9 @@ player = {
   end,
 }
 
-wallSlice = {}
+texSlice = {}
 for i=1,64 do
-  wallSlice[i] = love.graphics.newQuad(i-1,0,1,64,64,64)
+  texSlice[i] = love.graphics.newQuad(i-1,0,1,64,64,64)
 end
 
 wallTextures = {
@@ -47,3 +51,6 @@ wallTextures = {
   love.graphics.newImage("assets/brick2.png"),
 }
 
+sprites = {
+  love.graphics.newImage("assets/barrel.png"),
+}
