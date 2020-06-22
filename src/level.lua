@@ -13,7 +13,7 @@ mapWidth = #map[1]
 mapHeight = #map
 
 entities = {
-  {id=1,x=3,y=3}, -- sprite index, x,y
+  {id=1,x=3.5,y=3.5}, -- sprite index, x,y
 }
 
 player = {

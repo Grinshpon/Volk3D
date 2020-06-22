@@ -32,3 +32,13 @@ function love.draw()
   love.graphics.setColor(0.1,0.8,0.1)
   love.graphics.print("FPS: "..tostring(love.timer.getFPS( )), 10, 10)
 end
+
+
+--[[
+function love.quit()
+  for k,v in ipairs(ant) do
+    print(k,simplifyAngle(v))
+  end
+  return false
+end
+--]]

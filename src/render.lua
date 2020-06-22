@@ -1,3 +1,5 @@
+--require "lookup"
+
 fov = math.pi/3
 rayAngle = (fov)/320
 dof = 20 -- depth of field (how far away a wall gets before not being rendered)
@@ -198,10 +200,11 @@ function renderSlice(i,dist,id,slice) --slice todo
     love.graphics.draw(wallTextures[id],texSlice[slice], (i-1)*wratio()+wratio()/2,(100-height/dist)*hratio(), 0,wratio(),6.25/dist*hratio())
   end
 end
-
+ant = {}
 function raycaster()
   for i=1, 320 do
     local theta = simplifyAngle((i-1) * rayAngle + (player.dir - fov/2))
+    ant[i]=player.dir-theta
     local dist,wall,id,slice = shootRay(theta)
     dist = dist*math.cos(player.dir-theta)
     zBuffer[i] = dist
@@ -229,6 +232,9 @@ function fartherEntity(e1,e2)
 end
 
 function renderSprites()
+  local left,right = simplifyAngle(player.dir-(player.dir - fov/2)), simplifyAngle(player.dir-(319*rayAngle+(player.dir - fov/2)))
+  local lMid,rMid  = simplifyAngle(player.dir-(160*rayAngle+(player.dir - fov/2))), simplifyAngle(player.dir-(161*rayAngle+(player.dir - fov/2)))
+
   -- sort entities farthest to closest, then draw according to zbuffer and painter's algo
   table.sort(entities,fartherEntity)
   for i,s in ipairs(entities) do
@@ -236,11 +242,18 @@ function renderSprites()
     local vt = ucAngle(vx,vy)
     --local vt = math.atan(vy/vx)
     local theta = simplifyAngle(player.dir-vt)
+    local isLeft, isRight = (theta <= left and theta >= 0), (theta >= right and theta <= math.pi*2) --theta +- rayAngle*32 to outer (window border) checks todo
+    if isLeft or isRight then
+      --render sprite
+      local d = dist(player.pos.x,player.pos.y,vx,vy)*math.cos(player.dir-theta)
+      local ePos = (-vt-fov/2)/rayAngle+1 --(theta-(player.dir-fov/2))/rayAngle+1
+      love.graphics.print(ePos,1000,160)
+    end
 
     love.graphics.setColor(0.1,0.8,0.1)
-    love.graphics.print(theta,1000,10)
-    love.graphics.print(vt,1000,60)
-    love.graphics.print(simplifyAngle(player.dir),1000,110)
+    --love.graphics.print(theta,1000,10)
+    --love.graphics.print(vt,1000,60)
+    --love.graphics.print(simplifyAngle(player.dir),1000,110)
   end
   for i,d in ipairs(zBuffer) do
 
